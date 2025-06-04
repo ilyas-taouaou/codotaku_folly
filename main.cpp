@@ -25,15 +25,20 @@ public:
 
     void readEOF() noexcept override {
         std::cout << "Connection closed by server." << std::endl;
-        socket_->close();
+        shutdown();
     }
 
     void readErr(const AsyncSocketException &ex) noexcept override {
         std::cerr << "Read error: " << ex.what() << std::endl;
-        socket_->close();
+        shutdown();
     }
 
 private:
+    void shutdown() const {
+        socket_->close();
+        delete this;
+    }
+
     AsyncSocket::UniquePtr socket_;
     char buffer[4096]{};
 };
